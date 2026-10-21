@@ -13,6 +13,15 @@
   --soft: #f6f4f1;
   --chipbg: #e9e5df;
   --on-accent: #ffffff;
+  /* アプリの紹介（/app/）とトップの帯だけで使う＝アプリ DESIGN.md §2 の v2 の値（生成りの地に白いカードが浮く・金は飾りだけ） */
+  --kinari: #f7f3ec;
+  --card: #ffffff;
+  --gold: #c9a24a;
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.05), 0 8px 24px rgba(60, 40, 20, 0.06);
+  --shadow-phone: 0 24px 60px rgba(26, 26, 26, 0.16), 0 6px 16px rgba(26, 26, 26, 0.1);
+  /* 明朝は占い師の言葉だけ（DESIGN.md §3.1）。Google Fonts は使う字だけ読む（lib/app-page.mjs の MINCHO_URL） */
+  --font-mincho: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", serif;
+  --r-big: 18px;
 
   --font-body: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Hiragino Sans", "BIZ UDPGothic", "Yu Gothic Medium", "游ゴシック Medium", Meiryo, sans-serif;
   --lh-heading: 1.4;
@@ -322,13 +331,124 @@ p.act.mt { margin-top: var(--s2); display: block; }
 .app h2 { font-size: 24px; font-weight: 900; border: 0; padding: 0; }
 .app p { margin-top: 8px; }
 .app .btn { white-space: nowrap; background: var(--ink); }
-/* App Store の URL が無い間（アプリの公開前）は押せない札にする */
-.app .btn.soon { background: var(--paper); color: var(--sub); box-shadow: inset 0 0 0 1px var(--hair, #e6e2dc); cursor: default; }
 .gf { padding: var(--s3) 0 var(--s4); font-size: 14px; color: var(--sub); }
 .gf .disc { color: var(--ink); font-weight: 700; }
 .gf ul { list-style: none; padding: 0; margin: 12px 0 0; display: flex; flex-wrap: wrap; gap: 4px 20px; }
 .gf a { color: var(--ink); }
 .gf .copy { margin-top: 12px; }
+
+/* ── トップの帯（アプリの紹介へ・地は生成り＝アプリの色。端末は帯の下端に沈める） ── */
+.appband { display: grid; grid-template-columns: 60px minmax(0, 1fr) auto; gap: var(--s2) 20px; align-items: center; margin-top: var(--s3); padding: 14px 24px 0 20px; background: var(--kinari); border-radius: var(--r-big); text-decoration: none; overflow: hidden; }
+.appband .ph { align-self: end; width: 60px; height: 76px; overflow: hidden; background: var(--ink); padding: 3px 3px 0; border-radius: 13px 13px 0 0; }
+.appband .ph img { width: 100%; border-radius: 10px 10px 0 0; }
+.appband .tx { padding-bottom: 14px; }
+.appband b { display: block; font-size: 17px; font-weight: 900; }
+.appband b small { margin-left: 10px; font-size: 13px; font-weight: 700; color: var(--accent); }
+.appband .tx > span { display: block; margin-top: 2px; font-size: 14px; line-height: 1.6; color: var(--sub); }
+.appband .go { padding-bottom: 14px; font-weight: 700; color: var(--accent); white-space: nowrap; }
+.appband:hover b { text-decoration: underline; text-underline-offset: 4px; }
+.app .more { margin-top: 10px; }
+.app .more a { font-weight: 700; color: var(--accent); text-decoration: none; }
+.app .more a:hover { text-decoration: underline; }
+
+/* ── アプリの紹介（/app/）＝地は生成り・白いカードは枠なし＋影 2 層・角丸 18（アプリ DESIGN.md v2） ── */
+body.appview { background: var(--kinari); }
+.ai { display: inline-flex; align-items: center; height: 18px; padding: 0 6px; border: 1px solid var(--ink); border-radius: var(--r-chip); font-size: 11px; font-weight: 700; line-height: 1; letter-spacing: 0; }
+.ap-hero { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: var(--s5); align-items: center; padding: var(--s3) 0 var(--s2); }
+.ap-name { display: flex; align-items: center; gap: 12px; font-weight: 700; line-height: 1.5; }
+.ap-name .icon { width: 48px; height: 48px; border-radius: 11px; }
+.ap-name small { display: block; font-size: 13px; font-weight: 400; color: var(--sub); }
+.ap-teller { display: grid; grid-template-columns: 132px minmax(0, 1fr); align-items: end; gap: 14px; margin-top: var(--s3); }
+.ap-teller img { width: 132px; }
+.ap-bubble { position: relative; justify-self: start; width: max-content; max-width: min(22em, 100%); margin-bottom: 26px; padding: 12px 20px 14px; background: var(--card); border: 1px solid var(--hair); border-radius: var(--r-big); }
+.ap-bubble::before { content: ""; position: absolute; left: -9px; bottom: 20px; width: 16px; height: 16px; background: var(--card); border-left: 1px solid var(--hair); border-bottom: 1px solid var(--hair); transform: rotate(45deg); }
+.ap-bubble .who { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; }
+.ap-bubble .msg { word-break: auto-phrase; margin-top: 4px; font-family: var(--font-mincho); font-weight: 500; font-size: 17px; line-height: 1.75; letter-spacing: 0.04em; }
+.ap-hero h1 { margin-top: var(--s3); font-size: 46px; font-weight: 900; letter-spacing: 0.04em; }
+.ap-sub { margin-top: 10px; font-size: 19px; font-weight: 700; line-height: 1.6; text-wrap: balance; word-break: auto-phrase; }
+.ap-note { margin-top: 12px; font-size: 14px; color: var(--sub); }
+.stores { display: flex; flex-wrap: wrap; gap: 12px; margin-top: var(--s3); }
+.store { display: inline-flex; align-items: center; justify-content: center; min-width: 15em; min-height: 56px; padding: 0 28px; border-radius: var(--r-chip); font-size: 17px; font-weight: 700; text-decoration: none; white-space: nowrap; }
+.store span { font-size: 15px; font-weight: 400; }
+.store.ios { background: var(--ink); color: var(--on-accent); }
+.store.android { background: var(--card); color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+/* ストアの URL が入るまでの告知（英字の札＋日本語 1 行・ストア名と日付は書かない・押せる物に見せない） */
+.cs { display: inline-flex; align-items: center; gap: 14px; margin: var(--s3) 0 0; min-height: 56px; padding: 8px 24px 8px 22px; background: var(--card); border-radius: 14px; box-shadow: var(--shadow-card); }
+.cs .en { font-size: 20px; font-weight: 900; letter-spacing: 0.08em; line-height: 1.3; white-space: nowrap; }
+.cs .ja { padding-left: 14px; border-left: 1px solid var(--hair); font-size: 15px; font-weight: 700; line-height: 1.5; white-space: nowrap; }
+.cs.mini { display: inline-flex; gap: 0; min-height: 0; height: 22px; margin: 0 0 0 10px; padding: 0 10px; background: transparent; border: 1px solid var(--ink); border-radius: var(--r-chip); box-shadow: none; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; line-height: 1; vertical-align: 2px; }
+.app .cs { margin-top: 0; }
+.ap-visual { display: flex; justify-content: center; }
+/* 端末＝ストア画像（store_shots/build.py）と同じ墨の縁＋上の島。中は実機の画面そのまま */
+.phone { position: relative; width: 300px; padding: 10px; background: var(--ink); border-radius: 48px; box-shadow: var(--shadow-phone); }
+.phone::after { content: ""; position: absolute; top: 18px; left: 50%; width: 30%; height: 25px; background: var(--ink); border-radius: var(--r-chip); transform: translateX(-50%); }
+.phone img { width: 100%; border-radius: 38px; }
+
+.ap-sec { margin-top: var(--s5); }
+.feat { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s5); align-items: center; }
+.ap-sec > .feat { margin-top: var(--s4); }
+.feat.rev .tx { order: 2; }
+.feat .key { font-size: 14px; font-weight: 700; color: var(--sub); letter-spacing: 0.08em; }
+.feat h3 { margin-top: 4px; font-size: 26px; font-weight: 900; word-break: auto-phrase; }
+.feat .tx > p:not(.key) { margin-top: 12px; }
+.feat ul { margin: var(--s2) 0 0; padding: 0; list-style: none; border-top: 1px solid var(--divider); }
+.feat li { position: relative; padding: 9px 0 9px 1.3em; border-bottom: 1px solid var(--divider); font-size: 15px; line-height: 1.6; }
+.feat li::before { content: ""; position: absolute; left: 2px; top: 1.05em; width: 7px; height: 7px; border-radius: 50%; background: var(--gold); }
+.scr { display: flex; justify-content: center; margin: 0; padding: var(--s4) var(--s4) 0; background: var(--card); border-radius: var(--r-big); box-shadow: var(--shadow-card); overflow: hidden; }
+.scr .frame { width: min(260px, 100%); padding: 8px 8px 0; background: var(--ink); border-radius: 40px 40px 0 0; }
+.scr .frame img { width: 100%; border-radius: 32px 32px 0 0; }
+
+.appview .intro { max-width: 40em; }
+.ur-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: var(--s4); align-items: start; margin-top: var(--s3); }
+.tellers { margin: 0; padding: 0; list-style: none; display: grid; gap: 12px; }
+.tellers li { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 24px; align-items: center; padding: 18px 28px 18px 20px; background: var(--card); border-radius: var(--r-big); box-shadow: var(--shadow-card); }
+.tellers img { width: 112px; }
+.tellers .nm { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 19px; font-weight: 900; letter-spacing: 0.06em; }
+.tellers .pick { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border: 1px solid var(--accent); border-radius: var(--r-chip); font-size: 12px; font-weight: 700; color: var(--accent); letter-spacing: 0; }
+.tellers .sp { margin-top: 2px; font-size: 14px; color: var(--sub); }
+.tellers .ln { margin-top: 6px; }
+
+.plans { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr); gap: var(--s3); align-items: start; margin-top: var(--s3); }
+.plan-col { display: grid; gap: var(--s2); }
+.plan { padding: var(--s3); background: var(--card); border-radius: var(--r-big); box-shadow: var(--shadow-card); }
+.plan h3 { font-size: 18px; font-weight: 900; }
+.plan .yen { margin-top: 4px; }
+.plan .yen b { font-size: 48px; font-weight: 900; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.plan ul { margin: 12px 0 0; padding: 0; list-style: none; }
+.plan li { position: relative; padding: 8px 0 8px 1.3em; border-top: 1px solid var(--divider); }
+.plan li::before { content: ""; position: absolute; left: 2px; top: 1.15em; width: 7px; height: 7px; border-radius: 50%; background: var(--gold); }
+.plan .rows { margin: 12px 0 0; }
+.plan .rows div { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 16px; padding: 10px 0; border-top: 1px solid var(--divider); }
+.plan .rows dt { font-weight: 700; }
+.plan .rows dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+.plan .rows b { font-size: 22px; font-weight: 900; }
+.plan .sm { margin-top: 8px; font-size: 14px; color: var(--sub); }
+.free .sm { margin-top: 12px; }
+
+.qa { max-width: 52em; margin: var(--s3) 0 0; padding: 4px var(--s3); background: var(--card); border-radius: var(--r-big); box-shadow: var(--shadow-card); }
+.qa div { padding: 18px 0; border-top: 1px solid var(--divider); }
+.qa div:first-child { border-top: 0; }
+.qa dt { font-size: 17px; font-weight: 900; }
+.qa dt::before { content: "Q"; margin-right: 10px; color: var(--accent); }
+.qa dd { margin: 6px 0 0; }
+.appview .links a { background: var(--card); }
+.links.mt { margin-top: var(--s3); }
+
+.ap-end { display: grid; justify-items: center; margin-top: var(--s5); padding: var(--s4) var(--s3); background: var(--card); border-radius: var(--r-big); box-shadow: var(--shadow-card); text-align: center; }
+.ap-end .ap-teller { grid-template-columns: 96px auto; margin-top: 0; text-align: left; }
+.ap-end .ap-teller img { width: 96px; }
+.ap-end > h2 { margin-top: var(--s2); padding: 0; border: 0; font-size: 28px; }
+.ap-end .stores { justify-content: center; }
+
+@media (max-width: 1000px) {
+  .ap-hero { grid-template-columns: minmax(0, 1fr) 260px; gap: var(--s4); }
+  .ap-hero h1 { font-size: 38px; }
+  .phone { width: 260px; border-radius: 42px; padding: 9px; }
+  .phone::after { top: 16px; height: 22px; }
+  .phone img { border-radius: 33px; }
+  .feat { gap: var(--s4); }
+  .scr { padding: var(--s3) var(--s3) 0; }
+}
 
 @media (max-width: 760px) {
   .wrap { padding: 0 16px; }
@@ -390,4 +510,42 @@ p.act.mt { margin-top: var(--s2); display: block; }
   .form .act .btn { width: 100%; }
   .app .wrap { grid-template-columns: minmax(0, 1fr); }
   .app .btn { width: 100%; }
+  .appband { grid-template-columns: 52px minmax(0, 1fr); gap: 4px 14px; padding: 12px 16px 0 14px; }
+  .appband .ph { grid-row: span 2; width: 52px; height: 72px; }
+  .appband .tx { padding-bottom: 0; }
+  .appband .go { grid-column: 2; padding-bottom: 12px; font-size: 15px; }
+  .ap-hero { grid-template-columns: minmax(0, 1fr); gap: var(--s4); padding-top: var(--s2); }
+  .ap-teller { grid-template-columns: 96px minmax(0, 1fr); gap: 10px; margin-top: var(--s2); }
+  .ap-teller img { width: 96px; }
+  .ap-bubble { margin-bottom: 18px; padding: 10px 16px 12px; }
+  .ap-bubble .msg { font-size: 16px; }
+  .ap-hero h1 { margin-top: var(--s2); font-size: 32px; }
+  .ap-sub { font-size: 17px; }
+  .stores { display: grid; grid-template-columns: minmax(0, 1fr); }
+  .store { min-width: 0; width: 100%; }
+  .phone { width: 240px; border-radius: 40px; padding: 8px; }
+  .phone::after { top: 14px; height: 20px; }
+  .phone img { border-radius: 33px; }
+  .feat { grid-template-columns: minmax(0, 1fr); gap: var(--s3); }
+  .feat.rev .tx { order: 0; }
+  .feat h3 { font-size: 22px; }
+  .scr { padding: var(--s3) var(--s3) 0; }
+  .scr .frame { width: min(230px, 100%); border-radius: 36px 36px 0 0; }
+  .scr .frame img { border-radius: 29px 29px 0 0; }
+  .ur-body { grid-template-columns: minmax(0, 1fr); gap: var(--s3); }
+  .tellers li { grid-template-columns: 84px minmax(0, 1fr); gap: 16px; padding: 16px 18px 16px 14px; }
+  .tellers img { width: 84px; }
+  .tellers .nm { font-size: 18px; }
+  .plans { grid-template-columns: minmax(0, 1fr); }
+  .plan { padding: var(--s3) 20px; }
+  .qa { padding: 4px 20px; }
+  .qa dt { font-size: 16px; }
+  .ap-end { padding: var(--s4) 16px; }
+  .ap-end .ap-teller { grid-template-columns: 80px minmax(0, 1fr); justify-self: stretch; }
+  .ap-end .ap-teller img { width: 80px; }
+  .ap-end > h2 { font-size: 22px; }
+  .ap-end .stores { width: 100%; }
+  .cs { gap: 10px; padding: 8px 16px; }
+  .cs .en { font-size: 17px; letter-spacing: 0.06em; }
+  .cs .ja { padding-left: 10px; font-size: 14px; }
 }
