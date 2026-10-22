@@ -1,0 +1,16 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "jp.movon.otsuge",
+      "sha256_cert_fingerprints": [
+        "6C:C8:3A:A8:A7:80:D2:0E:24:0C:29:B4:3D:71:18:5D:EA:CB:CB:67:9D:5E:84:7E:2B:5F:7D:D6:62:A0:82:19",
+        "3F:30:E4:A7:CC:27:8F:89:97:AC:E8:D8:8F:87:61:8D:6A:AF:58:47:5D:F7:FF:74:72:ED:1F:91:54:07:53:C3",
+        "FA:C6:17:45:DC:09:03:78:6F:B9:ED:E6:2A:96:2B:39:9F:73:48:F0:BB:6F:89:9B:83:32:66:75:91:03:3B:9C"
+      ]
+    }
+  }
+]

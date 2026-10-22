@@ -1,0 +1,27 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": [
+          "9U8GJZV8YC.jp.movon.otsuge"
+        ],
+        "components": [
+          {
+            "/": "/support/*",
+            "exclude": true,
+            "comment": "規約類はブラウザで"
+          },
+          {
+            "/": "*",
+            "comment": "それ以外はアプリで開く"
+          }
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": [
+      "9U8GJZV8YC.jp.movon.otsuge"
+    ]
+  }
+}
