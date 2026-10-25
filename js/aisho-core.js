@@ -77,14 +77,13 @@ export function compatView({ me, partner, tenGod }) {
   const j = SIGNS.indexOf(partner.sun.replace(/座$/, ''));
   const gap = i < 0 || j < 0 ? 0 : Math.min(Math.abs(i - j), 12 - Math.abs(i - j));
   const numerology = me.lifePath === partner.lifePath ? 78 : GROUP(me.lifePath) === GROUP(partner.lifePath) ? 85 : 62;
-  return {
-    ...SHAPE[RELATION[tenGod] ?? 'same'],
-    scores: [
-      { label: '四柱推命', value: BAZI[tenGod] ?? 70 },
-      { label: '西洋占星術', value: WESTERN[gap] },
-      { label: '数秘術', value: numerology },
-    ],
-  };
+  const scores = [
+    { label: '四柱推命', value: BAZI[tenGod] ?? 70 },
+    { label: '西洋占星術', value: WESTERN[gap] },
+    { label: '数秘術', value: numerology },
+  ];
+  // total＝3 占術の点の平均（アプリの compat-shape.ts の compatTotal と同じ・アプリ d41b715 で足した値＝ビルドの突き合わせが一致を見る）
+  return { ...SHAPE[RELATION[tenGod] ?? 'same'], scores, total: Math.round(scores.reduce((a, s) => a + s.value, 0) / scores.length) };
 }
 
 /* ───────── 文章（決まった型の組み合わせ・AI は使わない） ───────── */
