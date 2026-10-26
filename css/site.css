@@ -549,3 +549,15 @@ body.appview { background: var(--kinari); }
   .cs .en { font-size: 17px; letter-spacing: 0.06em; }
   .cs .ja { padding-left: 10px; font-size: 14px; }
 }
+
+/* 星座どうしの相性（/aisho/<a>-<b>/・lib/aisho-pair-page.mjs） */
+.pgo { margin-top: var(--s3); padding: var(--s3); border: 1px solid var(--hair); border-radius: var(--r-card); }
+.pgo .btn { margin-top: var(--s2); }
+.pgo .more { margin-top: var(--s1); }
+.pgo .cs, .pgo .stores { margin-top: var(--s2); }
+.ylist.pairs .dates { gap: 8px 18px; }
+.ylist.pairs a.d { font-weight: 700; }
+@media (max-width: 760px) {
+  .pgo { padding: var(--s2) 20px; }
+  .pgo .btn { width: 100%; }
+}
