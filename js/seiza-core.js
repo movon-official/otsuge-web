@@ -50,6 +50,25 @@ export const MODS = [
   { bit: 4, key: 'newmoon', name: '新月', when: 'newmoon', delta: { sougou: 1 } },
   { bit: 8, key: 'fullmoon', name: '満月', when: 'fullmoon', delta: {} },
 ];
+/**
+ * 月の区切り（10/26 追加）＝正午の月の度数を 10 度ずつ 3 つに分け、前から その星座／同じエレメントの次の星座／その次 が受け持つ
+ * （同じエレメントで回す分け方＝デーカンの考え方のひとつ）。受け持つ星座は総合＋1、その向かい（180 度）は総合−1。
+ * 月は 1 日に 12〜15 度進む＝同じ星座にいる日も区切りは毎日変わる（月の部屋だけだと、月が同じ星座にいる 2〜3 日は順位が同じだった＝432 日中 178 日）。
+ * key＝MOD_TEXT のキー。加減の印（bits）とは別に、日ごとの行の 14 番目に区切り 0〜2 を詰める（古い JS がキャッシュに残っても星と順位は読める）
+ */
+export const DECAN = [
+  { key: 'decan_plus', name: '月の区切りの受け持ち', delta: { sougou: 1 } },
+  { key: 'decan_minus', name: '月の区切りの向かい', delta: { sougou: -1 } },
+];
+export const DECAN_PART = ['0〜10 度', '10〜20 度', '20〜30 度'];
+/** 区切りを受け持つ星座（月の星座 moon・区切り dec＝0〜2） */
+export const decanSign = (moon, dec) => mod12(moon + 4 * dec);
+/** その星座に効く区切りの加減（DECAN の要素・無ければ null） */
+export const decanOf = (moon, dec, sign) => {
+  if (!(dec >= 0 && dec <= 2)) return null;
+  const d = signDiff(sign, decanSign(moon, dec));
+  return d === 0 ? DECAN[0] : d === 6 ? DECAN[1] : null;
+};
 /** 水星逆行の期間（全星座・星の加減なし＝文だけ） */
 export const RX_KEY = 'mercury_rx';
 /** 位置を見る惑星（MODS の body と同じ・seiza-data.js にもこの順で詰める） */
@@ -104,21 +123,23 @@ const b36 = (c) => parseInt(c, 36);
  * seiza-data.js の 1 日分を読む。範囲外の日は null。
  * 1 日＝[月の星座, 新月の星座|-1, 満月の星座|-1, 水星逆行(0 なし・1 期間中・2 始まる日・3 順行に戻る日), 金星・火星の星座(36 進 2 字),
  *        六曜, 日の干支, 月の満ち欠け(0〜3＝その日に新月・上弦・満月・下弦／4〜7＝その後の期間), その瞬間の時刻 HH:MM|'', 月の照度%(06:30),
- *        順位の並び(1 位から星座の番号 36 進 12 字), 星(星座ごとに 総合・恋愛・金運・仕事 の 4 桁×12), 効いた加減(星座ごとに MODS の bit の和 16 進 1 字×12)]
+ *        順位の並び(1 位から星座の番号 36 進 12 字), 星(星座ごとに 総合・恋愛・金運・仕事 の 4 桁×12), 効いた加減(星座ごとに MODS の bit の和 16 進 1 字×12),
+        月の区切り(0〜2・10/26 追加＝無い行は -1 として読む)]
  */
 export function dayOf(data, date) {
   const i = Math.round((Date.parse(`${date}T00:00:00Z`) - Date.parse(`${data.from}T00:00:00Z`)) / DAY_MS);
   const row = i >= 0 ? data.days[i] : undefined;
   if (!row) return null;
-  const [moon, newMoon, fullMoon, rx, pl, roku, gz, phase, phaseTime, ill, order, st, md] = row;
+  const [moon, newMoon, fullMoon, rx, pl, roku, gz, phase, phaseTime, ill, order, st, md, decRaw] = row;
+  const dec = typeof decRaw === 'number' ? decRaw : -1;
   const ord = [...order].map(b36);
   const signs = SIGN_LIST.map((_, s) => {
     const v = [...st.slice(s * 4, s * 4 + 4)].map(Number);
     const stars = { sougou: v[0], ren: v[1], kin: v[2], shigoto: v[3] };
-    return { s, h: house(moon, s), stars, sub: subTotal(stars), bits: parseInt(md[s], 16), rank: ord.indexOf(s) + 1 };
+    return { s, h: house(moon, s), stars, sub: subTotal(stars), bits: parseInt(md[s], 16), decan: decanOf(moon, dec, s)?.key ?? null, rank: ord.indexOf(s) + 1 };
   });
   const planets = Object.fromEntries(PLANET_BODIES.map((b, j) => [b, b36(pl[j])]));
-  return { date, moon, newMoon, fullMoon, rx, planets, roku, gz, phase, phaseTime, ill, order: ord, signs };
+  return { date, moon, newMoon, fullMoon, rx, planets, roku, gz, phase, phaseTime, ill, order: ord, signs, dec };
 }
 
 /** ★（accent）と☆（sub）。読み上げは aria-label の 1 つだけ */
@@ -147,7 +168,7 @@ export function rankingPanel(data, date, { label, link }) {
     })
     .join('');
   return `${head}<ol class="rank">${rows}</ol>
-<p class="note mt">順位は総合の星の多い順です。総合の星が同じ時は恋愛・金運・仕事の星の合計の多い順、それも同じ時は日ごとに入れ替わる順番で並べます。星座名を押すと、恋愛運・金運・仕事運と、その日の運勢の出し方をご覧いただけます。</p>
+<p class="note mt">星は正午の月の位置（星座と、その中の 10 度ごとの区切り）と星の動きで出し、順位は総合の星の多い順です。総合の星が同じ時は恋愛・金運・仕事の星の合計の多い順、それも同じ時は日ごとに入れ替わる順番で並べます。星座名を押すと、恋愛運・金運・仕事運と、その日の運勢の出し方をご覧いただけます。</p>
 ${koyomiBox(data, day, label)}`;
 }
 
@@ -198,7 +219,7 @@ export function signPanel(data, date, s, { label }) {
     .join('');
   // 効いた星の動き（MODS の順・水星逆行は最後）
   const applied = MODS.filter((m) => x.bits & m.bit);
-  const modKeys = [...applied.map((m) => m.key), ...(day.rx ? [RX_KEY] : [])];
+  const modKeys = [...(x.decan ? [x.decan] : []), ...applied.map((m) => m.key), ...(day.rx ? [RX_KEY] : [])];
   const mods = modKeys.length
     ? `<div class="szmods"><h3>${label}の星の動き</h3>${mt ? `<ul>${modKeys.map((k) => `<li>${esc(mt[k])}</li>`).join('')}</ul>` : `<p>${prep('星の動きの文')}</p>`}</div>`
     : '';
@@ -216,6 +237,14 @@ function basisBox(day, x, s, label) {
   const base = Object.fromEntries(ITEMS.map((it) => [it.k, BASE[it.k][x.h - 1]]));
   const raw = { ...base };
   const lines = [];
+  const dz = DECAN.find((d) => d.key === x.decan);
+  if (dz) {
+    for (const [k, v] of Object.entries(dz.delta)) raw[k] += v;
+    const owner = SIGN_LIST[decanSign(day.moon, day.dec)].name;
+    lines.push(
+      `正午の月は${SIGN_LIST[day.moon].name}の ${DECAN_PART[day.dec]}。この区切りを受け持つのは${owner}${dz === DECAN[0] ? '＝あなたの星座です' : `＝あなたの星座の向かい側（180 度）です`} ${nw(`→ ${deltaText(dz.delta)}`)}`
+    );
+  }
   for (const m of MODS) {
     if (!(x.bits & m.bit)) continue;
     for (const [k, v] of Object.entries(m.delta)) raw[k] += v;
